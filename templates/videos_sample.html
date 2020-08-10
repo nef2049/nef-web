@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+</head>
+<body>
+
+<video id="content" src="" controls="controls">
+</video>
+
+<script>
+    let url = "selected";
+    let xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("GET", url, true);
+    xmlHttpRequest.send()
+
+    xmlHttpRequest.onreadystatechange = function (ev) {
+        if (xmlHttpRequest.readyState === 4 && xmlHttpRequest.status === 200) {
+            console.log(xmlHttpRequest.responseText);
+            let player = document.querySelector('#content');
+            player.src = xmlHttpRequest.responseText;
+            player.play();
+        }
+    }
+</script>
+
+</body>
+</html>

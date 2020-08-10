@@ -9,9 +9,10 @@ def get_file_size(file):
 
 # black_mirror.mp4 -> black_mirror
 def get_file_name(file_name):
-    return file_name.split('.')[0]
+    file_type = get_file_type(file_name)
+    return file_name[:-len(file_type) - 1]
 
 
 # black_mirror.mp4 -> mp4
 def get_file_type(file_name):
-    return file_name.split('.')[1]
+    return file_name.split('.')[-1]

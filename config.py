@@ -14,7 +14,9 @@ UPLOAD_PATH_VIDEOS = os.path.join(UPLOAD_PATH, "videos")
 DB_ID_PREFIX = "nef_"
 
 # 2G bytes
-UPLOAD_FILE_MAX_LENGTH = 1 * 1024 * 1024 * 1024
+UPLOAD_FILE_MAX_LENGTH = 8 * 1024 * 1024 * 1024
+
+URL_VIDEO_PREFIX = "http://192.168.123.225/build/videos"
 
 
 def init():

@@ -15,13 +15,25 @@ def hello_world():
 
 @bp.bp_videos.route('/sample')
 def sample():
-    return flask.render_template("hello.html")
+    return flask.render_template("videos_sample.html")
+
+
+@bp.bp_videos.route("/selected")
+def selected():
+    return os.path.join(config.URL_VIDEO_PREFIX, "The_Newsroom_S02E04__HDTVrip_1024x576-YYeTs.mp4")
 
 
 @bp.bp_videos.route("/upload", methods=["POST"])
 def upload():
     file = flask.request.files["file"]
     file_name = werkzeug.utils.secure_filename(file.filename)
+
+    # test
+    _file_name = utils.file.get_file_name(file_name)
+    _file_type = utils.file.get_file_type(file_name)
+    file_name = _file_name.replace(".", "_")+"."+_file_type
+    app.app.logger.debug(file_name)
+
     try:
         # save to database
         tb_videos = database.tb_videos.TB_Videos()
