@@ -91,3 +91,4 @@ class SQLManager(object):
 
 import database.tb_videos
 import database.tb_session
+import database.tb_user

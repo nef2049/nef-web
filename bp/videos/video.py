@@ -8,9 +8,6 @@ import utils
 import app
 
 
-selected_video_name = ""
-
-
 @bp.bp_videos.route('/')
 def hello_world():
     return 'Hello Videos'
@@ -25,13 +22,17 @@ def list():
 
 @bp.bp_videos.route('/sample/<video_name>')
 def sample(video_name):
-    global selected_video_name
-    selected_video_name = video_name
+    flask.session["video_name"] = video_name
     return flask.render_template("videos_sample.html")
 
 
 @bp.bp_videos.route("/selected")
 def selected():
+    db = database.tb_videos.TB_Videos()
+    result = db.fetch_one("select * from t_videos where name = %s", flask.session.get("video_name", ""))
+    selected_video_name = ""
+    if result is not None:
+        selected_video_name = result["name"] + "." + result["file_type"]
     return os.path.join(config.ULR_VIDEOS_PREFIX, selected_video_name)
 
 

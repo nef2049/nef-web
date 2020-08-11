@@ -49,11 +49,15 @@ def index():
     return flask.render_template("welcome.html")
 
 
+@app.route("/favicon.ico")
+def favicon():
+    return app.send_static_file("res/icon/globe.ico")
+
+
 @app.route("/login/<username>/<password>")
 def login(username, password):
     flask.session["name"] = username
     flask.session["pwd"] = password
-    flask.session.permanent = True
     return "success"
 
 
@@ -63,31 +67,32 @@ def info():
     return result
 
 
-@app.route("/favicon.ico")
-def favicon():
-    return app.send_static_file("res/icon/globe.ico")
+@app.errorhandler(400)
+def error_handler_400(error):
+    return str(error)
 
 
 @app.errorhandler(404)
 def error_handler_404(error):
-    return str(error)
+    app.logger.warning(error)
+    return flask.redirect(flask.url_for("index"))
 
 
-@app.before_request
-def before_request():
-    app.logger.debug("before request")
-
-
-@app.after_request
-def after_request(request):
-    app.logger.debug("after request")
-    return request
-
-
-@app.teardown_request
-def teardown_request(request):
-    app.logger.debug("teardown request")
-    return request
+# @app.before_request
+# def before_request():
+#     app.logger.debug("before request")
+#
+#
+# @app.after_request
+# def after_request(request):
+#     app.logger.debug("after request")
+#     return request
+#
+#
+# @app.teardown_request
+# def teardown_request(request):
+#     app.logger.debug("teardown request")
+#     return request
 
 
 if __name__ == "__main__":
