@@ -53,16 +53,16 @@ class SQLManager(object):
         self.cursor.close()
         self.conn.close()
 
-    # 查询多条数据
-    def get_list(self, sql, args=None):
-        self.cursor.execute(sql, args)
-        result = self.cursor.fetchall()
-        return result
-
     # 查询单条数据
-    def get_one(self, sql, args=None):
+    def fetch_one(self, sql, args=None):
         self.cursor.execute(sql, args)
         result = self.cursor.fetchone()
+        return result
+
+    # 查询多条数据
+    def fetch_all(self, sql, args=None):
+        self.cursor.execute(sql, args)
+        result = self.cursor.fetchall()
         return result
 
     # 执行单条SQL语句
@@ -90,3 +90,4 @@ class SQLManager(object):
 
 
 import database.tb_videos
+import database.tb_session

@@ -1,10 +1,10 @@
 import database
 
 
-class TB_Videos(object):
+class TB_Session(object):
 
     def __init__(self):
-        TB_Videos.create_database_if_not_exists()
+        TB_Session.create_database_if_not_exists()
         self.create_table_if_not_exists()
 
     @staticmethod
@@ -15,20 +15,22 @@ class TB_Videos(object):
     @staticmethod
     def create_table_if_not_exists():
         with database.SQLManager("NefVision") as db:
-            db.execute("create table if not exists t_videos("
-                       "id varchar(64) not null,"
-                       "`name` varchar(128) not null,"
-                       "alias varchar(128),"
-                       "path varchar(128) not null,"
-                       "file_type varchar(32) not null,"
-                       "upload_time timestamp default current_timestamp ,"
-                       "primary key(id),"
-                       "unique uk_name(`name`))")
+            db.execute("create table if not exists t_session("
+                       "session_id varchar(64) not null,"
+                       "`value` varchar(512) not null,"
+                       "expire time default null,"
+                       "update_time timestamp default current_timestamp,"
+                       "primary key(session_id))")
 
     @staticmethod
     def insert(args=None):
         with database.SQLManager("NefVision") as db:
-            db.execute("insert into t_videos(id,`name`,alias,path,file_type) values(%s,%s,%s,%s,%s)", args)
+            db.execute("insert into t_session(session_id,`value`,expire) values(%s,%s,%s)", args)
+
+    @staticmethod
+    def execute(sql, args=None):
+        with database.SQLManager("NefVision") as db:
+            db.execute(sql, args)
 
     @staticmethod
     def fetch_one(sql, args=None):

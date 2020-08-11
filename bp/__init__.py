@@ -5,6 +5,7 @@ __init__.py的作用就是import所有的模块和子包，
 
 import flask
 
+
 bp_videos = flask.Blueprint("bp_videos", __name__)
 bp_audios = flask.Blueprint("bp_audios", __name__)
 
