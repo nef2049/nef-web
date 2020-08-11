@@ -23,7 +23,7 @@ class TB_User(object):
                        "gendar int(1) not null,"
                        "email varchar(64) default null,"
                        "phone_number varchar(64) default null,"
-                       "register_time timestamp default current_timestamp ,"
+                       "register_time timestamp default null ,"
                        "update_time timestamp default current_timestamp ,"
                        "primary key(user_id),"
                        "unique uk_username(username),"
@@ -32,7 +32,9 @@ class TB_User(object):
 
     def insert(self, args=None):
         with database.SQLManager("NefVision") as db:
-            db.execute("insert into t_session(username,nickname,password,gendar,email,phone_number) values(%s,%s,%s)", args)
+            db.execute(
+                "insert into t_session(user_id,username,nickname,password,gendar,email,phone_number,register_time) "
+                "values(%s,%s,%s,%s,%s,%s,%s,%s,)", args)
 
     def execute(self, sql, args=None):
         with database.SQLManager("NefVision") as db:
