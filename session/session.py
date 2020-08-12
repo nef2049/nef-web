@@ -102,7 +102,7 @@ class SessionInterfaceImpl(flask.sessions.SessionInterface):
 
     @staticmethod
     def _generate_sid():
-        return str(utils.uuid.uuid_ramdom())
+        return str(utils.uuid.uuid_random())
 
     @staticmethod
     def _get_signer(_app):

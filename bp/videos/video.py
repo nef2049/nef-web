@@ -48,7 +48,7 @@ def upload():
     try:
         # save to database
         tb_videos = database.tb_videos.TB_Videos()
-        tb_videos.insert((config.DB_ID_PREFIX + utils.uuid.uuid_ramdom(),
+        tb_videos.insert((config.DB_ID_PREFIX + utils.uuid.uuid_random(),
                           _file_name,
                           _file_name,
                           os.path.join(config.UPLOAD_PATH_VIDEOS, file_name),
