@@ -60,17 +60,45 @@ def favicon():
     return app.send_static_file("res/icon/globe.ico")
 
 
-@app.route("/login/<username>/<password>")
-def login(username, password):
-    flask.session["name"] = username
-    flask.session["pwd"] = password
-    try:
-        db = nef.database.tb_user.TB_User()
-        db.insert((nef.utils.randoms.random_digital(length=15), username, "steven", password, 1, "2942332923@qq.com",
-                   "15313967539"))
-    except BaseException as e:
-        app.logger.debug(e)
-    return "success"
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if flask.request.method == "POST":
+
+        username = "tempname"
+        password = "temppwd"
+
+        flask.session["name"] = username
+        flask.session["pwd"] = password
+        try:
+            db = nef.database.tb_user.TB_User()
+            db.insert(
+                (nef.utils.randoms.random_digital(length=15), username, "steven", password, 1, "2942332923@qq.com",
+                 "15313967539"))
+        except BaseException as e:
+            app.logger.debug(e)
+        return "success"
+
+    return flask.render_template("login/login.html")
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if flask.request.method == "POST":
+        username = "regusername"
+        password = "regpassword"
+
+        flask.session["name"] = username
+        flask.session["pwd"] = password
+        try:
+            db = nef.database.tb_user.TB_User()
+            db.insert(
+                (nef.utils.randoms.random_digital(length=15), username, "steven", password, 1, "2942332923@qq.com",
+                 "15313967539"))
+        except BaseException as e:
+            app.logger.debug(e)
+        return "success"
+
+    return flask.render_template("register/register.html")
 
 
 @app.route("/test")
@@ -96,10 +124,14 @@ def error_handler_404(error):
     return str(error)
 
 
-# @app.before_request
-# def before_request():
-#     app.logger.debug("before request")
-#
+@app.before_request
+def before_request():
+    app.logger.debug("before request")
+    if flask.request.path != "/register" and flask.request.path != "/login":
+        # 在这里判断是否登陆
+        return flask.redirect(flask.url_for("login"))
+
+
 #
 # @app.after_request
 # def after_request(request):
