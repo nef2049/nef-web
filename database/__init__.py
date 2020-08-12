@@ -5,7 +5,7 @@ DB_CONFIG = {
     "host": "localhost",
     "port": 3306,
     "user": "root",
-    "passwd": "1994",
+    "password": "1994",
     "charset": "utf8"
 }
 
@@ -34,7 +34,7 @@ class SQLManager(object):
                 host=DB_CONFIG["host"],
                 user=DB_CONFIG["user"],
                 port=DB_CONFIG["port"],
-                passwd=DB_CONFIG["passwd"],
+                passwd=DB_CONFIG["password"],
                 charset=DB_CONFIG["charset"]
             )
         else:
@@ -42,7 +42,7 @@ class SQLManager(object):
                 host=DB_CONFIG["host"],
                 user=DB_CONFIG["user"],
                 port=DB_CONFIG["port"],
-                passwd=DB_CONFIG["passwd"],
+                passwd=DB_CONFIG["password"],
                 db=self.db_name,
                 charset=DB_CONFIG["charset"]
             )

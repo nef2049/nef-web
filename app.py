@@ -2,6 +2,8 @@ import flask
 import bp
 import config
 import session.session
+import database
+import utils
 
 
 config.init()
@@ -58,6 +60,19 @@ def favicon():
 def login(username, password):
     flask.session["name"] = username
     flask.session["pwd"] = password
+    try:
+        db = database.tb_user.TB_User()
+        db.insert((utils.randoms.random_digital(length=15), username, "steven", password, 1, "2942332923@qq.com",
+                   "15313967539"))
+    except BaseException as e:
+        app.logger.debug(e)
+    return "success"
+
+
+@app.route("/test")
+def test():
+    flask.session["region"] = "shanghai"
+    flask.session.pop("name", None)
     return "success"
 
 
@@ -74,8 +89,7 @@ def error_handler_400(error):
 
 @app.errorhandler(404)
 def error_handler_404(error):
-    app.logger.warning(error)
-    return flask.redirect(flask.url_for("index"))
+    return str(error)
 
 
 # @app.before_request
@@ -96,4 +110,4 @@ def error_handler_404(error):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="0.0.0.0", port=80, debug=True, ssl_context=("certificate/server.crt", "certificate/server.key"))
