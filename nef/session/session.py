@@ -1,10 +1,10 @@
 import flask.sessions
-import utils.uuid
 import itsdangerous
 import json
-import database
-import config
-import app as context
+import nef.config
+import nef.database
+import nef.utils
+import run as context
 
 
 class Session(dict, flask.sessions.SessionMixin):
@@ -28,7 +28,7 @@ class SessionInterfaceImpl(flask.sessions.SessionInterface):
 
     def __init__(self):
         self.session_class = Session
-        self.db_session = database.tb_session.TB_Session()
+        self.db_session = nef.database.tb_session.TB_Session()
 
     def open_session(self, app, request):
         sid = request.cookies.get(app.session_cookie_name)
@@ -82,7 +82,7 @@ class SessionInterfaceImpl(flask.sessions.SessionInterface):
 
         session_id = self._get_signer(app).sign(itsdangerous.want_bytes(session.sid))
 
-        if expires == config.PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE:
+        if expires == nef.config.PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE:
             response.set_cookie(app.session_cookie_name, session_id, httponly=httponly,
                                 domain=domain, path=path, secure=secure)
         else:
@@ -102,7 +102,7 @@ class SessionInterfaceImpl(flask.sessions.SessionInterface):
 
     @staticmethod
     def _generate_sid():
-        return str(utils.uuid.uuid_random())
+        return str(nef.utils.uuid.uuid_random())
 
     @staticmethod
     def _get_signer(_app):

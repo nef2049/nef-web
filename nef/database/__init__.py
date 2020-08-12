@@ -89,6 +89,6 @@ class SQLManager(object):
         self.conn.commit()
 
 
-import database.tb_videos
-import database.tb_session
-import database.tb_user
+import nef.database.tb_user
+import nef.database.tb_videos
+import nef.database.tb_session

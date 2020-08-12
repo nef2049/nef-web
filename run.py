@@ -1,25 +1,29 @@
+"""
+1. import xxx
+2. from xxx import yyy
+
+    第一种失败就采用第二种，原因未知
+"""
 import flask
-import bp
-import config
-import session.session
-import database
-import utils
+import nef
+from nef.session.session import SessionInterfaceImpl
+from nef.bp import bp_audios, bp_videos
 
 
-config.init()
+nef.config.init()
 
 # remove default dir 'static'
 app = flask.Flask(__name__, static_folder='', static_url_path='')
-app.config["SESSION_COOKIE_NAME"] = config.SESSION_COOKIE_NAME
-app.config["SESSION_COOKIE_DOMAIN"] = config.SESSION_COOKIE_DOMAIN
-app.config["SESSION_COOKIE_PATH"] = config.SESSION_COOKIE_PATH
-app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
-app.config["SESSION_COOKIE_SECURE"] = config.SESSION_COOKIE_SECURE
-app.config["SESSION_REFRESH_EACH_REQUEST"] = config.SESSION_REFRESH_EACH_REQUEST
-app.config["PERMANENT_SESSION_LIFETIME"] = config.PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE
+app.config["SESSION_COOKIE_NAME"] = nef.config.SESSION_COOKIE_NAME
+app.config["SESSION_COOKIE_DOMAIN"] = nef.config.SESSION_COOKIE_DOMAIN
+app.config["SESSION_COOKIE_PATH"] = nef.config.SESSION_COOKIE_PATH
+app.config["SESSION_COOKIE_HTTPONLY"] = nef.config.SESSION_COOKIE_HTTPONLY
+app.config["SESSION_COOKIE_SECURE"] = nef.config.SESSION_COOKIE_SECURE
+app.config["SESSION_REFRESH_EACH_REQUEST"] = nef.config.SESSION_REFRESH_EACH_REQUEST
+app.config["PERMANENT_SESSION_LIFETIME"] = nef.config.PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE
 
 # upload file
-app.config['MAX_CONTENT_LENGTH'] = config.UPLOAD_FILE_MAX_LENGTH
+app.config['MAX_CONTENT_LENGTH'] = nef.config.UPLOAD_FILE_MAX_LENGTH
 
 # session
 """
@@ -37,12 +41,12 @@ def info():
     return result
 
 """
-app.secret_key = config.SECRET_KEY
-app.session_interface = session.session.SessionInterfaceImpl()
+app.secret_key = nef.config.SECRET_KEY
+app.session_interface = SessionInterfaceImpl()
 
 # blueprint
-app.register_blueprint(blueprint=bp.bp_videos, url_prefix="/videos")
-app.register_blueprint(blueprint=bp.bp_audios, url_prefix="/audios")
+app.register_blueprint(blueprint=bp_videos, url_prefix="/videos")
+app.register_blueprint(blueprint=bp_audios, url_prefix="/audios")
 
 
 @app.route("/")
@@ -61,8 +65,8 @@ def login(username, password):
     flask.session["name"] = username
     flask.session["pwd"] = password
     try:
-        db = database.tb_user.TB_User()
-        db.insert((utils.randoms.random_digital(length=15), username, "steven", password, 1, "2942332923@qq.com",
+        db = nef.database.tb_user.TB_User()
+        db.insert((nef.utils.randoms.random_digital(length=15), username, "steven", password, 1, "2942332923@qq.com",
                    "15313967539"))
     except BaseException as e:
         app.logger.debug(e)

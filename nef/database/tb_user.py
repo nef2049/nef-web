@@ -1,4 +1,4 @@
-import database
+import nef.database
 
 
 class TB_User(object):
@@ -9,11 +9,11 @@ class TB_User(object):
 
     @staticmethod
     def __create_database_if_not_exists():
-        db = database.SQLManager()
+        db = nef.database.SQLManager()
         db.execute("create database if not exists NefVision")
 
     def create_table_if_not_exists(self):
-        with database.SQLManager("NefVision") as db:
+        with nef.database.SQLManager("NefVision") as db:
             db.execute("create table if not exists t_user("
                        "id bigint(15) not null auto_increment,"
                        "user_id bigint(15) not null,"
@@ -32,19 +32,19 @@ class TB_User(object):
                        "unique uk_phone_number(phone_number))")
 
     def insert(self, args=None):
-        with database.SQLManager("NefVision") as db:
+        with nef.database.SQLManager("NefVision") as db:
             db.execute(
                 "insert into t_user(user_id,username,nickname,password,gendar,email,phone_number) "
                 "values(%s,%s,%s,%s,%s,%s,%s)", args)
 
     def execute(self, sql, args=None):
-        with database.SQLManager("NefVision") as db:
+        with nef.database.SQLManager("NefVision") as db:
             db.execute(sql, args)
 
     def fetch_one(self, sql, args=None):
-        with database.SQLManager("NefVision") as db:
+        with nef.database.SQLManager("NefVision") as db:
             return db.fetch_one(sql, args)
 
     def fetch_all(self, sql, args=None):
-        with database.SQLManager("NefVision") as db:
+        with nef.database.SQLManager("NefVision") as db:
             return db.fetch_all(sql, args)
