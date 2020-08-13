@@ -2,3 +2,7 @@ https://jekyllrb.com/docs/installation/ubuntu/
 
 
 https://github.com/cotes2020/jekyll-theme-chirpy/
+
+
+1. jekyll-theme-chirpy/tabs/about.md中的内容修改
+2. bash tools/build.sh -d /path/to/site/

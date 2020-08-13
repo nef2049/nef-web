@@ -1,7 +1,7 @@
 from nef.bp import bp_blogs
-import flask
+from run import app
 
 
 @bp_blogs.route("/")
 def index():
-    return flask.render_template("blog/index.html")
+    return app.send_static_file("index.html")

@@ -14,8 +14,8 @@ import json
 
 nef.config.init()
 
-# remove default dir 'static'
-app = flask.Flask(__name__, static_folder='/templates/blog/', static_url_path='')
+# 访问static下的文件只需要 https://xx.xx.xx.xx:xx + /assets/css/page.css
+app = flask.Flask(__name__, static_folder='static', static_url_path='/')
 app.config["SESSION_COOKIE_NAME"] = nef.config.SESSION_COOKIE_NAME
 app.config["SESSION_COOKIE_DOMAIN"] = nef.config.SESSION_COOKIE_DOMAIN
 app.config["SESSION_COOKIE_PATH"] = nef.config.SESSION_COOKIE_PATH
@@ -28,7 +28,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = nef.config.PERMANENT_SESSION_LIFETIME
 app.config['MAX_CONTENT_LENGTH'] = nef.config.UPLOAD_FILE_MAX_LENGTH
 
 # static file
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=5)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=0)
 
 # session
 """
@@ -50,7 +50,7 @@ app.secret_key = nef.config.SECRET_KEY
 app.session_interface = SessionInterfaceImpl()
 
 # blueprint
-app.register_blueprint(blueprint=bp_blogs, url_prefix="/blogs")
+app.register_blueprint(blueprint=bp_blogs, url_prefix="/nef")
 app.register_blueprint(blueprint=bp_videos, url_prefix="/videos")
 app.register_blueprint(blueprint=bp_audios, url_prefix="/audios")
 
@@ -58,17 +58,12 @@ app.register_blueprint(blueprint=bp_audios, url_prefix="/audios")
 @app.route("/")
 @app.route("/index.html")
 def index():
-    return flask.render_template("welcome.html")
+    return "welcome"
 
 
 @app.route("/favicon.ico")
 def favicon():
     return app.send_static_file("res/icon/globe.ico")
-
-
-@app.route("/abc/getMdFile")
-def getMdfile():
-    return flask.render_template("blog/index.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -191,4 +186,5 @@ def teardown_request(request):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80, debug=True, ssl_context=("certificate/server.crt", "certificate/server.key"))
+    # app.run(host="0.0.0.0", port=80, debug=True, ssl_context=("certificate/server.crt", "certificate/server.key"))
+    app.run(host="0.0.0.0", port=80, debug=True)
