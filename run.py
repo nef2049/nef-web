@@ -8,6 +8,8 @@ import flask
 import nef
 from nef.session.session import SessionInterfaceImpl
 from nef.bp import bp_audios, bp_videos
+import datetime
+import json
 
 
 nef.config.init()
@@ -24,6 +26,9 @@ app.config["PERMANENT_SESSION_LIFETIME"] = nef.config.PERMANENT_SESSION_LIFETIME
 
 # upload file
 app.config['MAX_CONTENT_LENGTH'] = nef.config.UPLOAD_FILE_MAX_LENGTH
+
+# static file
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=5)
 
 # session
 """
@@ -63,55 +68,89 @@ def favicon():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if flask.request.method == "POST":
+        username = None
+        password = None
 
-        username = "tempname"
-        password = "temppwd"
-
-        flask.session["name"] = username
-        flask.session["pwd"] = password
+        content_type = ""
+        for header in flask.request.headers:
+            if "content-type" == header[0].lower():
+                content_type = header[1]
+        if nef.config.CONTENT_TYPE_APPLICATION_JSON in content_type.lower():
+            username = json.loads(flask.request.data.decode("utf-8"))["username"]
+            password = json.loads(flask.request.data.decode("utf-8"))["password"]
+        else:
+            if nef.config.CONTENT_TYPE_APPLICATION_URLENCODED in content_type.lower():
+                username = flask.request.form.get("username", None)
+                password = flask.request.form.get("password", None)
         try:
             db = nef.database.tb_user.TB_User()
-            db.insert(
-                (nef.utils.randoms.random_digital(length=15), username, "steven", password, 1, "2942332923@qq.com",
-                 "15313967539"))
+            fetch_result = db.fetch_one("select * from t_user where username = %s", username)
+            if fetch_result is None:
+                return "User does not exist"
+            if fetch_result["password"] != password:
+                return "Password error"
+            flask.session["user_id"] = fetch_result["user_id"]
         except BaseException as e:
             app.logger.debug(e)
+            return str(e)
         return "success"
-
     return flask.render_template("login/login.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if flask.request.method == "POST":
-        username = "regusername"
-        password = "regpassword"
+        username = None
+        email = None
+        phone = None
+        password = None
 
-        flask.session["name"] = username
-        flask.session["pwd"] = password
+        content_type = ""
+        for header in flask.request.headers:
+            if "content-type" == header[0].lower():
+                content_type = header[1]
+        if nef.config.CONTENT_TYPE_APPLICATION_JSON in content_type.lower():
+            # POST /info
+            # Content-Type:application/json
+            # '{"xxx": "xxx", "xxx": xx}'
+            username = json.loads(flask.request.data.decode("utf-8"))["username"]
+            email = json.loads(flask.request.data.decode("utf-8"))["email"]
+            phone = json.loads(flask.request.data.decode("utf-8"))["phone"]
+            password = json.loads(flask.request.data.decode("utf-8"))["password"]
+        elif nef.config.CONTENT_TYPE_APPLICATION_URLENCODED in content_type.lower():
+            # POST /info
+            # Content-Type:application/x-www-form-urlencoded
+            # "xxx=xx&&xxx=xx"
+            username = flask.request.form.get("username", None)
+            email = flask.request.form.get("email", None)
+            phone = flask.request.form.get("phone", None)
+            password = flask.request.form.get("password", None)
+
         try:
             db = nef.database.tb_user.TB_User()
+            user_id = nef.utils.randoms.random_digital(length=15)
             db.insert(
-                (nef.utils.randoms.random_digital(length=15), username, "steven", password, 1, "2942332923@qq.com",
-                 "15313967539"))
+                (user_id, username, username, password, 1, email, phone))
+            flask.session["user_id"] = user_id
         except BaseException as e:
             app.logger.debug(e)
-        return "success"
+            return str(e)
+        return flask.redirect(flask.url_for("login"))
 
     return flask.render_template("register/register.html")
 
 
-@app.route("/test")
-def test():
-    flask.session["region"] = "shanghai"
-    flask.session.pop("name", None)
-    return "success"
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if flask.request.method == "POST":
+        return "success"
+    return flask.render_template("forgot_password/forgot_password.html")
 
 
-@app.route("/info")
-def info():
-    result = {"name": flask.session.get("name", ""), "pwd": flask.session.get("pwd", "")}
-    return result
+@app.route("/logout")
+def logout():
+    flask.session.pop("user_id", None)
+    return flask.redirect(flask.url_for("login"))
 
 
 @app.errorhandler(400)
@@ -126,23 +165,23 @@ def error_handler_404(error):
 
 @app.before_request
 def before_request():
-    app.logger.debug("before request")
-    if flask.request.path != "/register" and flask.request.path != "/login":
-        # 在这里判断是否登陆
-        return flask.redirect(flask.url_for("login"))
+    # app.logger.debug("before request")
+    if flask.request.path != "/register" and flask.request.path != "/login" and flask.request.path != "/forgot_password":
+        if flask.session.get("user_id", None) is None:
+            app.logger.warning("not login")
+        return None
 
 
-#
-# @app.after_request
-# def after_request(request):
-#     app.logger.debug("after request")
-#     return request
-#
-#
-# @app.teardown_request
-# def teardown_request(request):
-#     app.logger.debug("teardown request")
-#     return request
+@app.after_request
+def after_request(request):
+    # app.logger.debug("after request")
+    return request
+
+
+@app.teardown_request
+def teardown_request(request):
+    # app.logger.debug("teardown request")
+    return request
 
 
 if __name__ == "__main__":

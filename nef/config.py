@@ -13,13 +13,12 @@ UPLOAD_PATH_AVATARS = os.path.join(UPLOAD_PATH, "avatars")
 UPLOAD_PATH_AUDIOS = os.path.join(UPLOAD_PATH, "audios")
 UPLOAD_PATH_VIDEOS = os.path.join(UPLOAD_PATH, "videos")
 
-DB_ID_PREFIX = "nef_"
+DB_ID_PREFIX = "nvid_"
 
 # 2G bytes
 UPLOAD_FILE_MAX_LENGTH = 8 * 1024 * 1024 * 1024
 
-RELATIVE_PATH_HTML_TO_VIDEOS = "../uploads/videos"
-ULR_VIDEOS_PREFIX = "http://10.0.75.1:8080/uploads/videos"
+ULR_VIDEOS_PREFIX = "/uploads/videos"
 
 SECRET_KEY = "4q356073da85fc469e9dc432046cb63d"
 
@@ -32,6 +31,9 @@ SESSION_COOKIE_SECURE = False
 SESSION_REFRESH_EACH_REQUEST = True
 PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=30)
 PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE = datetime.timedelta(days=-1)
+
+CONTENT_TYPE_APPLICATION_JSON = "application/json"
+CONTENT_TYPE_APPLICATION_URLENCODED = "application/x-www-form-urlencoded"
 
 
 def init():

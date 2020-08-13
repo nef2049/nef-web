@@ -10,6 +10,7 @@ def random_digital(length=20):
         num += chars[rd.randint(0, _length)]
     return int(num)
 
+
 def random_chars(length=20):
     result = ''
     chars = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
