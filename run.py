@@ -7,7 +7,7 @@
 import flask
 import nef
 from nef.session.session import SessionInterfaceImpl
-from nef.bp import bp_audios, bp_videos
+from nef.bp import bp_audios, bp_videos, bp_blogs
 import datetime
 import json
 
@@ -15,7 +15,7 @@ import json
 nef.config.init()
 
 # remove default dir 'static'
-app = flask.Flask(__name__, static_folder='', static_url_path='')
+app = flask.Flask(__name__, static_folder='/templates/blog/', static_url_path='')
 app.config["SESSION_COOKIE_NAME"] = nef.config.SESSION_COOKIE_NAME
 app.config["SESSION_COOKIE_DOMAIN"] = nef.config.SESSION_COOKIE_DOMAIN
 app.config["SESSION_COOKIE_PATH"] = nef.config.SESSION_COOKIE_PATH
@@ -50,6 +50,7 @@ app.secret_key = nef.config.SECRET_KEY
 app.session_interface = SessionInterfaceImpl()
 
 # blueprint
+app.register_blueprint(blueprint=bp_blogs, url_prefix="/blogs")
 app.register_blueprint(blueprint=bp_videos, url_prefix="/videos")
 app.register_blueprint(blueprint=bp_audios, url_prefix="/audios")
 
@@ -63,6 +64,11 @@ def index():
 @app.route("/favicon.ico")
 def favicon():
     return app.send_static_file("res/icon/globe.ico")
+
+
+@app.route("/abc/getMdFile")
+def getMdfile():
+    return flask.render_template("blog/index.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
