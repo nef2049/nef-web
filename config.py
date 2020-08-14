@@ -1,5 +1,6 @@
 import os
 import datetime
+import nef.database
 
 
 # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision
@@ -35,6 +36,9 @@ PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE = datetime.timedelta(days=-1)
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 CONTENT_TYPE_APPLICATION_URLENCODED = "application/x-www-form-urlencoded"
 
+JEKYLL_OUTPUT_PATH = os.path.join(PROJECT_PATH, "static/user")
+JEKYLL_PROJECT_PATH = os.path.join(PROJECT_PATH, "jekyll-theme-chirpy")
+
 
 def init():
     if not os.path.exists(UPLOAD_PATH):
@@ -48,3 +52,27 @@ def init():
 
     if not os.path.exists(UPLOAD_PATH_VIDEOS):
         os.makedirs(UPLOAD_PATH_VIDEOS)
+
+    if not os.path.exists(JEKYLL_OUTPUT_PATH):
+        os.system('rm -rf static/')
+        os.system('git clone https://github.com/cotes2020/jekyll-theme-chirpy.git')
+
+        os.makedirs(JEKYLL_OUTPUT_PATH)
+
+        os.chdir(JEKYLL_PROJECT_PATH)
+        os.system('bundle install')
+        os.system('tools/init.sh')
+        os.chdir(PROJECT_PATH)
+
+    db = nef.database.tb_user.TB_User()
+    fetch_result = db.fetch_all("select * from t_user")
+    for entry in fetch_result:
+        user_id = entry["user_id"]
+        user_path = os.path.join(JEKYLL_OUTPUT_PATH, str(user_id))
+        if not os.path.exists(user_path):
+            cmd = '{0}/tools/build.sh -b {1} -d {2}'.format(
+                JEKYLL_PROJECT_PATH,
+                os.path.join("/user", str(user_id)),
+                user_path
+            )
+            os.system(cmd)

@@ -10,24 +10,24 @@ from nef.session.session import SessionInterfaceImpl
 from nef.bp import bp_audios, bp_videos, bp_blogs
 import datetime
 import json
+import config
+import os
 
-
-nef.config.init()
 
 # 访问static下的文件只需要 https://xx.xx.xx.xx:xx + /assets/css/page.css
 # static_folder主要是用来改变url的目录的，默认是static，可以通过这个变量来改变静态文件目录
 # static_url_path主要用于改变url的path的，静态文件放在static下面，所以正常情况url是static/filename，但是可以通过static_url_path来改变这个url
 app = flask.Flask(__name__, static_folder='static', static_url_path="/")
-app.config["SESSION_COOKIE_NAME"] = nef.config.SESSION_COOKIE_NAME
-app.config["SESSION_COOKIE_DOMAIN"] = nef.config.SESSION_COOKIE_DOMAIN
-app.config["SESSION_COOKIE_PATH"] = nef.config.SESSION_COOKIE_PATH
-app.config["SESSION_COOKIE_HTTPONLY"] = nef.config.SESSION_COOKIE_HTTPONLY
-app.config["SESSION_COOKIE_SECURE"] = nef.config.SESSION_COOKIE_SECURE
-app.config["SESSION_REFRESH_EACH_REQUEST"] = nef.config.SESSION_REFRESH_EACH_REQUEST
-app.config["PERMANENT_SESSION_LIFETIME"] = nef.config.PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE
+app.config["SESSION_COOKIE_NAME"] = config.SESSION_COOKIE_NAME
+app.config["SESSION_COOKIE_DOMAIN"] = config.SESSION_COOKIE_DOMAIN
+app.config["SESSION_COOKIE_PATH"] = config.SESSION_COOKIE_PATH
+app.config["SESSION_COOKIE_HTTPONLY"] = config.SESSION_COOKIE_HTTPONLY
+app.config["SESSION_COOKIE_SECURE"] = config.SESSION_COOKIE_SECURE
+app.config["SESSION_REFRESH_EACH_REQUEST"] = config.SESSION_REFRESH_EACH_REQUEST
+app.config["PERMANENT_SESSION_LIFETIME"] = config.PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE
 
 # upload file
-app.config['MAX_CONTENT_LENGTH'] = nef.config.UPLOAD_FILE_MAX_LENGTH
+app.config['MAX_CONTENT_LENGTH'] = config.UPLOAD_FILE_MAX_LENGTH
 
 # static file
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=0)
@@ -48,7 +48,7 @@ def info():
     return result
 
 """
-app.secret_key = nef.config.SECRET_KEY
+app.secret_key = config.SECRET_KEY
 app.session_interface = SessionInterfaceImpl()
 
 # blueprint
@@ -78,11 +78,11 @@ def login():
         for header in flask.request.headers:
             if "content-type" == header[0].lower():
                 content_type = header[1]
-        if nef.config.CONTENT_TYPE_APPLICATION_JSON in content_type.lower():
+        if config.CONTENT_TYPE_APPLICATION_JSON in content_type.lower():
             username = json.loads(flask.request.data.decode("utf-8"))["username"]
             password = json.loads(flask.request.data.decode("utf-8"))["password"]
         else:
-            if nef.config.CONTENT_TYPE_APPLICATION_URLENCODED in content_type.lower():
+            if config.CONTENT_TYPE_APPLICATION_URLENCODED in content_type.lower():
                 username = flask.request.form.get("username", None)
                 password = flask.request.form.get("password", None)
         try:
@@ -112,7 +112,7 @@ def register():
         for header in flask.request.headers:
             if "content-type" == header[0].lower():
                 content_type = header[1]
-        if nef.config.CONTENT_TYPE_APPLICATION_JSON in content_type.lower():
+        if config.CONTENT_TYPE_APPLICATION_JSON in content_type.lower():
             # POST /info
             # Content-Type:application/json
             # '{"xxx": "xxx", "xxx": xx}'
@@ -120,7 +120,7 @@ def register():
             email = json.loads(flask.request.data.decode("utf-8"))["email"]
             phone = json.loads(flask.request.data.decode("utf-8"))["phone"]
             password = json.loads(flask.request.data.decode("utf-8"))["password"]
-        elif nef.config.CONTENT_TYPE_APPLICATION_URLENCODED in content_type.lower():
+        elif config.CONTENT_TYPE_APPLICATION_URLENCODED in content_type.lower():
             # POST /info
             # Content-Type:application/x-www-form-urlencoded
             # "xxx=xx&&xxx=xx"
@@ -135,6 +135,16 @@ def register():
             db.insert(
                 (user_id, username, username, password, 1, email, phone))
             flask.session["user_id"] = user_id
+
+            # 创建用户空间
+            user_path = os.path.join(config.JEKYLL_OUTPUT_PATH, str(user_id))
+            if not os.path.exists(user_path):
+                cmd = '{0}/tools/build.sh -b {1} -d {2}'.format(
+                    config.JEKYLL_PROJECT_PATH,
+                    os.path.join("/user", str(user_id)),
+                    user_path
+                )
+                os.system(cmd)
         except BaseException as e:
             app.logger.debug(e)
             return str(e)
@@ -188,5 +198,9 @@ def teardown_request(request):
 
 
 if __name__ == "__main__":
+    # config.init()，必须放在
+    config.init()
+
+    # 端口号应该在1024~65535之间，否则在linux上执行需要权限
     # app.run(host="0.0.0.0", port=80, debug=True, ssl_context=("certificate/server.crt", "certificate/server.key"))
-    app.run(host="0.0.0.0", port=80, debug=True)
+    app.run(host="0.0.0.0", port=2000, debug=True)

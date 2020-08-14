@@ -1,7 +1,7 @@
 import flask.sessions
 import itsdangerous
 import json
-import nef.config
+import config
 import nef.database
 import nef.utils
 import run as context
@@ -82,7 +82,7 @@ class SessionInterfaceImpl(flask.sessions.SessionInterface):
 
         session_id = self._get_signer(app).sign(itsdangerous.want_bytes(session.sid))
 
-        if expires == nef.config.PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE:
+        if expires == config.PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE:
             response.set_cookie(app.session_cookie_name, session_id, httponly=httponly,
                                 domain=domain, path=path, secure=secure)
         else:

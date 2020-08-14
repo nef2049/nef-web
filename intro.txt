@@ -1,14 +1,3 @@
-https://jekyllrb.com/docs/installation/ubuntu/
-
-
-https://github.com/cotes2020/jekyll-theme-chirpy/
-
-
-1. jekyll-theme-chirpy/tabs/about.md中的内容修改
-2. jekyll-theme-chirpy目录下 bash tools/build.sh -d /path/to/site/
-
-1. work
-2. 利用flask搭建了一个server，
-        api
-        利用jekyll来将md转化成html生成各个页面，尝试过用python的模块和node.js中的md模块都很不理想
-        https://github.com/cotes2020/jekyll-theme-chirpy/
+关于jekyll:
+    https://jekyllrb.com/docs/installation/ubuntu/
+    https://github.com/cotes2020/jekyll-theme-chirpy/

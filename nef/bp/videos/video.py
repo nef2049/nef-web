@@ -1,7 +1,7 @@
 from nef.bp import bp_videos
 import nef.database
 import nef.utils
-import nef.config
+import config
 import flask
 import werkzeug.utils
 import os
@@ -33,7 +33,7 @@ def selected():
     selected_video_name = ""
     if result is not None:
         selected_video_name = result["name"] + "." + result["file_type"]
-    return os.path.join(nef.config.ULR_VIDEOS_PREFIX, selected_video_name)
+    return os.path.join(config.ULR_VIDEOS_PREFIX, selected_video_name)
 
 
 @bp_videos.route("/upload", methods=["POST"])
@@ -48,12 +48,12 @@ def upload():
     try:
         # save to database
         tb_videos = nef.database.tb_videos.TB_Videos()
-        tb_videos.insert((nef.config.DB_ID_PREFIX + nef.utils.uuid.uuid_random(),
+        tb_videos.insert((config.DB_ID_PREFIX + nef.utils.uuid.uuid_random(),
                           _file_name,
                           _file_name,
-                          os.path.join(nef.config.UPLOAD_PATH_VIDEOS, file_name),
+                          os.path.join(config.UPLOAD_PATH_VIDEOS, file_name),
                           _file_type))
-        file.save(os.path.join(nef.config.UPLOAD_PATH_VIDEOS, file_name))
+        file.save(os.path.join(config.UPLOAD_PATH_VIDEOS, file_name))
     except BaseException as e:
         run.app.logger.debug(e)
         return {"code": 400, "status": str(e)}
