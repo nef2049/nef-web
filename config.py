@@ -36,8 +36,12 @@ PERMANENT_SESSION_LIFETIME_TERMINATE_AFTER_CLOSE = datetime.timedelta(days=-1)
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 CONTENT_TYPE_APPLICATION_URLENCODED = "application/x-www-form-urlencoded"
 
+# /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/static/user
 JEKYLL_OUTPUT_PATH = os.path.join(PROJECT_PATH, "static/user")
+# /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/jekyll-theme-chirpy
 JEKYLL_PROJECT_PATH = os.path.join(PROJECT_PATH, "jekyll-theme-chirpy")
+# /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/jekyll-theme-chirpy/_posts
+JEKYLL_POST_PATH = os.path.join(JEKYLL_PROJECT_PATH, "_posts")
 
 
 def init():
@@ -52,6 +56,9 @@ def init():
 
     if not os.path.exists(UPLOAD_PATH_VIDEOS):
         os.makedirs(UPLOAD_PATH_VIDEOS)
+
+    # TODO: 删除/static
+    # TODO: 遍历uploads/xxx，把每个user的posts拷贝到jekyll 然后build 然后删除(把下面的操作移动到这个遍历中进行)
 
     if not os.path.exists(JEKYLL_OUTPUT_PATH):
         os.system('rm -rf static/')

@@ -92,3 +92,4 @@ class SQLManager(object):
 import nef.database.tb_user
 import nef.database.tb_videos
 import nef.database.tb_session
+import nef.database.tb_posts
