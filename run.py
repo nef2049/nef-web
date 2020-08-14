@@ -15,7 +15,9 @@ import json
 nef.config.init()
 
 # 访问static下的文件只需要 https://xx.xx.xx.xx:xx + /assets/css/page.css
-app = flask.Flask(__name__, static_folder='static', static_url_path='/')
+# static_folder主要是用来改变url的目录的，默认是static，可以通过这个变量来改变静态文件目录
+# static_url_path主要用于改变url的path的，静态文件放在static下面，所以正常情况url是static/filename，但是可以通过static_url_path来改变这个url
+app = flask.Flask(__name__, static_folder='static', static_url_path="/")
 app.config["SESSION_COOKIE_NAME"] = nef.config.SESSION_COOKIE_NAME
 app.config["SESSION_COOKIE_DOMAIN"] = nef.config.SESSION_COOKIE_DOMAIN
 app.config["SESSION_COOKIE_PATH"] = nef.config.SESSION_COOKIE_PATH
@@ -50,7 +52,7 @@ app.secret_key = nef.config.SECRET_KEY
 app.session_interface = SessionInterfaceImpl()
 
 # blueprint
-app.register_blueprint(blueprint=bp_blogs, url_prefix="/nef")
+app.register_blueprint(blueprint=bp_blogs, url_prefix="/user")
 app.register_blueprint(blueprint=bp_videos, url_prefix="/videos")
 app.register_blueprint(blueprint=bp_audios, url_prefix="/audios")
 
