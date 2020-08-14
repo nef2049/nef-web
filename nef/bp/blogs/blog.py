@@ -18,6 +18,31 @@ def index(user_id):
     return app.send_static_file("user/" + user_id + "/index.html")
 
 
+@bp_blogs.route("/<user_id>/tabs/categories/")
+def tabs_categories(user_id):
+    return app.send_static_file("user/" + user_id + "/tabs/categories/index.html")
+
+
+@bp_blogs.route("/<user_id>/tabs/tags/")
+def tabs_tags(user_id):
+    return app.send_static_file("user/" + user_id + "/tabs/tags/index.html")
+
+
+@bp_blogs.route("/<user_id>/tabs/archives/")
+def tabs_archives(user_id):
+    return app.send_static_file("user/" + user_id + "/tabs/archives/index.html")
+
+
+@bp_blogs.route("/<user_id>/tabs/about/")
+def tabs_about(user_id):
+    return app.send_static_file("user/" + user_id + "/tabs/about/index.html")
+
+
+@bp_blogs.route("/<user_id>/posts/<post_name>/")
+def post(user_id, post_name):
+    return app.send_static_file("user/" + user_id + "/posts/" + post_name + "/index.html")
+
+
 @bp_blogs.route("/upload/<user_id>", methods=["POST"])
 def upload(user_id):
     file = flask.request.files["file"]
