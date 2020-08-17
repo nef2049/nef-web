@@ -22,7 +22,7 @@ class TB_Videos(object):
                        "file_type varchar(64) not null,"
                        "upload_time timestamp default current_timestamp ,"
                        "primary key(id),"
-                       "unique uk_name(`name`))")
+                       "unique uk_v_name(`name`))")
 
     def insert(self, args=None):
         with nef.database.SQLManager("NefVision") as db:

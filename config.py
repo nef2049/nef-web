@@ -3,6 +3,7 @@ import datetime
 import nef.database
 import io
 import yaml
+import cmd_code
 
 
 # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision
@@ -12,7 +13,6 @@ PROJECT_NAME = os.path.split(PROJECT_PATH)[1]
 # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/uploads
 UPLOAD_PATH = os.path.join(PROJECT_PATH, "uploads")
 
-UPLOAD_PATH_AVATARS = os.path.join(UPLOAD_PATH, "avatars")
 UPLOAD_PATH_AUDIOS = os.path.join(UPLOAD_PATH, "audios")
 UPLOAD_PATH_VIDEOS = os.path.join(UPLOAD_PATH, "videos")
 
@@ -50,9 +50,6 @@ def init():
     if not os.path.exists(UPLOAD_PATH):
         os.makedirs(UPLOAD_PATH)
 
-    if not os.path.exists(UPLOAD_PATH_AVATARS):
-        os.makedirs(UPLOAD_PATH_AVATARS)
-
     if not os.path.exists(UPLOAD_PATH_AUDIOS):
         os.makedirs(UPLOAD_PATH_AUDIOS)
 
@@ -61,6 +58,11 @@ def init():
 
     if not os.path.exists(JEKYLL_PROJECT_PATH):
         clone_code = os.system('git clone https://github.com/cotes2020/jekyll-theme-chirpy.git')
+        if clone_code != cmd_code.OS_CMD_CODE_SUCCESS:
+            os.system('rm -rf jekyll-theme-chirpy')
+            raise BaseException(
+                "failed to execute 'git clone https://github.com/cotes2020/jekyll-theme-chirpy.git, code: "
+                + str(clone_code))
         os.system('rm -f jekyll-theme-chirpy/_posts/*')
 
     if not os.path.exists(JEKYLL_OUTPUT_PATH):
@@ -68,8 +70,17 @@ def init():
         os.makedirs(JEKYLL_OUTPUT_PATH)
 
         os.chdir(JEKYLL_PROJECT_PATH)
+
         bundle_install_code = os.system('bundle install')
+        if bundle_install_code != cmd_code.OS_CMD_CODE_SUCCESS:
+            os.system('rm -rf static/user/*')
+            raise BaseException("failed to execute 'bundle install', code: " + str(bundle_install_code))
+
         bash_init_code = os.system('tools/init.sh')
+        if bash_init_code != cmd_code.OS_CMD_CODE_SUCCESS:
+            os.system('rm -rf static/user/*')
+            raise BaseException("failed to execute 'tools/init.sh', code: " + str(bash_init_code))
+
         os.chdir(PROJECT_PATH)
 
 
@@ -105,6 +116,15 @@ def config_user(user_id):
     # delete file in jekyll
     os.system('rm {}'.format(os.path.join(JEKYLL_POST_PATH, "*")))
 
+    # avatar
+    # cp to static/user/xxx/assets/img/avatar/avatar.xxx
+    if os.path.exists(JEKYLL_OUTPUT_PATH):
+        avatar_path_src = os.path.join(UPLOAD_PATH, str(user_id) + "/avatar")
+        avatar_path = JEKYLL_OUTPUT_PATH + "/" + str(user_id) + "/assets/img/avatar/"
+        if not os.path.exists(avatar_path):
+            os.makedirs(avatar_path)
+        os.system('cp {0} {1}'.format(avatar_path_src + "/*", avatar_path))
+
 
 # file_path: /home/vaad/xxx/PythonProjects/NefVision/jekyll-theme-chirpy/_config.yml
 def config_yaml_file(user_id):
@@ -113,19 +133,31 @@ def config_yaml_file(user_id):
         config_content = yaml.load(rf, Loader=yaml.FullLoader)
 
         try:
-            db_user = nef.database.tb_user.TB_User()
-            user_info = db_user.fetch_one("select * from t_user where user_id=%s", user_id)
+            db_bc = nef.database.tb_blog_config.TB_Blog_Config()
+            user_info = db_bc.fetch_one("select * from t_blog_config where user_id=%s", user_id)
+            if user_info["title"] is not None:
+                config_content["title"] = user_info["title"]
+            if user_info["tagline"] is not None:
+                config_content["tagline"] = user_info["tagline"]
+            if user_info["url"] is not None:
+                config_content["url"] = user_info["url"]
+            if user_info["author"] is not None:
+                config_content["author"] = user_info["author"]
+            if user_info["avatar"] is not None:
+                config_content["avatar"] = user_info["avatar"]
+            if user_info["github_username"] is not None:
+                config_content["github"]["username"] = user_info["github_username"]
+            if user_info["twitter_username"] is not None:
+                config_content["twitter"]["username"] = user_info["twitter_username"]
+            if user_info["social_name"] is not None:
+                config_content["social"]["name"] = user_info["social_name"]
+            if user_info["social_email"] is not None:
+                config_content["social"]["email"] = user_info["social_email"]
+            if user_info["social_links"] is not None:
+                links = user_info["social_links"].split(";")
+                for i in range(len(links)):
+                    config_content["social"]["links"][i] = links[i]
 
-            config_content["title"] = "nef2077"
-            config_content["tagline"] = "NOW IS FLASK"
-            config_content["url"] = "http://10.0.75.1:60000"
-            config_content["author"] = user_info["username"]
-            config_content["github"]["username"] = "reetmoon"
-            config_content["twitter"]["username"] = "NEF2049"
-            config_content["social"]["name"] = "nef2077"
-            config_content["social"]["email"] = user_info["email"]
-            config_content["social"]["links"][0] = "https://twitter.com/NEF2049"
-            config_content["social"]["links"][1] = "https://github.com/reetmoon"
         except BaseException as e:
             import run
             run.app.logger.debug(str(e))

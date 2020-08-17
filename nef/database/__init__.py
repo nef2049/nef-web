@@ -93,3 +93,4 @@ import nef.database.tb_user
 import nef.database.tb_videos
 import nef.database.tb_session
 import nef.database.tb_posts
+import nef.database.tb_blog_config

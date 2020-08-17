@@ -22,7 +22,7 @@ class TB_Posts(object):
                        "create_time timestamp default current_timestamp,"
                        "upload_time timestamp default current_timestamp on update current_timestamp,"
                        "primary key(id),"
-                       "constraint fk_user_id foreign key(user_id) references t_user(user_id) on update cascade)")
+                       "constraint fk_p_user_id foreign key(user_id) references t_user(user_id) on update cascade)")
 
     def insert(self, args=None):
         with nef.database.SQLManager("NefVision") as db:

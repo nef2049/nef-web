@@ -7,7 +7,7 @@
 import flask
 import nef
 from nef.session.session import SessionInterfaceImpl
-from nef.bp import bp_audios, bp_videos, bp_blogs
+from nef.bp import bp_audios, bp_videos, bp_blogs, bp_images, bp_profile
 import datetime
 import json
 import config
@@ -55,6 +55,8 @@ app.session_interface = SessionInterfaceImpl()
 app.register_blueprint(blueprint=bp_blogs, url_prefix="/user")
 app.register_blueprint(blueprint=bp_videos, url_prefix="/videos")
 app.register_blueprint(blueprint=bp_audios, url_prefix="/audios")
+app.register_blueprint(blueprint=bp_images, url_prefix="/images")
+app.register_blueprint(blueprint=bp_profile, url_prefix="/profile")
 
 
 @app.route("/")
@@ -181,6 +183,10 @@ def error_handler_404(error):
 @app.before_request
 def before_request():
     # app.logger.debug("before request")
+    if flask.session is None:
+        print("flask.session is None")
+    else:
+        print("flask.session: " + str(flask.session))
     return None
 
 
