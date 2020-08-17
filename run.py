@@ -170,21 +170,18 @@ def logout():
 
 @app.errorhandler(400)
 def error_handler_400(error):
-    return str(error)
+    return flask.redirect("/login")
 
 
 @app.errorhandler(404)
 def error_handler_404(error):
-    return str(error)
+    return flask.redirect("/login")
 
 
 @app.before_request
 def before_request():
     # app.logger.debug("before request")
-    if flask.request.path != "/register" and flask.request.path != "/login" and flask.request.path != "/forgot_password":
-        if flask.session.get("user_id", None) is None:
-            app.logger.warning("not login")
-        return None
+    return None
 
 
 @app.after_request

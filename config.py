@@ -60,11 +60,7 @@ def init():
         os.makedirs(UPLOAD_PATH_VIDEOS)
 
     if not os.path.exists(JEKYLL_PROJECT_PATH):
-        os.system('git clone https://github.com/cotes2020/jekyll-theme-chirpy.git')
-
-        # config _config.yml
-        config_yaml_file()
-
+        clone_code = os.system('git clone https://github.com/cotes2020/jekyll-theme-chirpy.git')
         os.system('rm -f jekyll-theme-chirpy/_posts/*')
 
     if not os.path.exists(JEKYLL_OUTPUT_PATH):
@@ -72,12 +68,15 @@ def init():
         os.makedirs(JEKYLL_OUTPUT_PATH)
 
         os.chdir(JEKYLL_PROJECT_PATH)
-        os.system('bundle install')
-        os.system('tools/init.sh')
+        bundle_install_code = os.system('bundle install')
+        bash_init_code = os.system('tools/init.sh')
         os.chdir(PROJECT_PATH)
 
 
 def config_user(user_id):
+    # config _config.yml
+    config_yaml_file(user_id)
+
     os.system('rm -rf static/user/{}/*'.format(user_id))
     # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/uploads/428899288027429/posts
     file_path = os.path.join(UPLOAD_PATH, str(user_id) + "/posts")
@@ -108,21 +107,28 @@ def config_user(user_id):
 
 
 # file_path: /home/vaad/xxx/PythonProjects/NefVision/jekyll-theme-chirpy/_config.yml
-def config_yaml_file():
+def config_yaml_file(user_id):
     file_path = os.path.join(JEKYLL_PROJECT_PATH, "_config.yml")
     with io.open(file_path, 'r', encoding="utf-8") as rf:
         config_content = yaml.load(rf, Loader=yaml.FullLoader)
 
-        # config_content["title"] = "nef2077"
-        # config_content["tagline"] = "NOW IS FLASK"
-        # config_content["url"] = "10.0.75.1:60000"
-        # config_content["author"] = "nef2077"
-        # config_content["github"]["username"] = "reetmoon"
-        # config_content["twitter"]["username"] = "NEF2049"
-        # config_content["social"]["name"] = "nef2077"
-        # config_content["social"]["email"] = "steven199409@outlook.com"
-        # config_content["social"]["links"][0] = "https://twitter.com/NEF2077"
-        # config_content["social"]["links"][1] = "https://github.com/reetmoon"
+        try:
+            db_user = nef.database.tb_user.TB_User()
+            user_info = db_user.fetch_one("select * from t_user where user_id=%s", user_id)
+
+            config_content["title"] = "nef2077"
+            config_content["tagline"] = "NOW IS FLASK"
+            config_content["url"] = "http://10.0.75.1:60000"
+            config_content["author"] = user_info["username"]
+            config_content["github"]["username"] = "reetmoon"
+            config_content["twitter"]["username"] = "NEF2049"
+            config_content["social"]["name"] = "nef2077"
+            config_content["social"]["email"] = user_info["email"]
+            config_content["social"]["links"][0] = "https://twitter.com/NEF2049"
+            config_content["social"]["links"][1] = "https://github.com/reetmoon"
+        except BaseException as e:
+            import run
+            run.app.logger.debug(str(e))
 
     with io.open(file_path, 'w', encoding="utf-8") as wf:
         yaml.dump(config_content, wf)
