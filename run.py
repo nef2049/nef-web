@@ -97,7 +97,7 @@ def login():
             app.logger.debug(e)
             return str(e)
         return "success"
-    return flask.render_template("login/login.html")
+    return app.send_static_file("login/login.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -149,15 +149,14 @@ def register():
             app.logger.debug(e)
             return str(e)
         return flask.redirect(flask.url_for("login"))
-
-    return flask.render_template("register/register.html")
+    return app.send_static_file("register/register.html")
 
 
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
     if flask.request.method == "POST":
         return "success"
-    return flask.render_template("forgot_password/forgot_password.html")
+    return app.send_static_file("forgot_password/forgot_password.html")
 
 
 @app.route("/logout")
