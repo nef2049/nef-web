@@ -33,12 +33,6 @@ class TB_Blog_Config(object):
                        "unique uk_bc_user_id(user_id),"
                        "constraint fk_bc_user_id foreign key(user_id) references t_user(user_id) on update cascade)")
 
-    def insert(self, args=None):
-        with nef.database.SQLManager("NefVision") as db:
-            db.execute(
-                "insert into t_blog_config(user_id) "
-                "values(%s)", args)
-
     def execute(self, sql, args=None):
         with nef.database.SQLManager("NefVision") as db:
             db.execute(sql, args)

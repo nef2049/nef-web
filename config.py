@@ -4,7 +4,13 @@ import nef.database
 import io
 import yaml
 import cmd_code
+import platform
 
+
+PLATFORM = platform.system()
+PLATFORM_MACOS = "Darwin"
+PLATFORM_WINDOWS = "Windows"
+PLATFORM_LINUX = "Linux"
 
 # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision
 PROJECT_PATH = os.path.split(os.path.abspath(__file__))[0]
@@ -73,12 +79,12 @@ def init():
 
         bundle_install_code = os.system('bundle install')
         if bundle_install_code != cmd_code.OS_CMD_CODE_SUCCESS:
-            os.system('rm -rf static/user/*')
+            os.system('rm -rf static/user/')
             raise BaseException("failed to execute 'bundle install', code: " + str(bundle_install_code))
 
         bash_init_code = os.system('tools/init.sh')
         if bash_init_code != cmd_code.OS_CMD_CODE_SUCCESS:
-            os.system('rm -rf static/user/*')
+            os.system('rm -rf static/user/')
             raise BaseException("failed to execute 'tools/init.sh', code: " + str(bash_init_code))
 
         os.chdir(PROJECT_PATH)
