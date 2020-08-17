@@ -1,6 +1,8 @@
 import os
 import datetime
 import nef.database
+import io
+import yaml
 
 
 # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision
@@ -59,6 +61,10 @@ def init():
 
     if not os.path.exists(JEKYLL_PROJECT_PATH):
         os.system('git clone https://github.com/cotes2020/jekyll-theme-chirpy.git')
+
+        # config _config.yml
+        config_yaml_file()
+
         os.system('rm -f jekyll-theme-chirpy/_posts/*')
 
     if not os.path.exists(JEKYLL_OUTPUT_PATH):
@@ -99,3 +105,24 @@ def config_user(user_id):
     os.system(cmd)
     # delete file in jekyll
     os.system('rm {}'.format(os.path.join(JEKYLL_POST_PATH, "*")))
+
+
+# file_path: /home/vaad/xxx/PythonProjects/NefVision/jekyll-theme-chirpy/_config.yml
+def config_yaml_file():
+    file_path = os.path.join(JEKYLL_PROJECT_PATH, "_config.yml")
+    with io.open(file_path, 'r', encoding="utf-8") as rf:
+        config_content = yaml.load(rf, Loader=yaml.FullLoader)
+
+        # config_content["title"] = "nef2077"
+        # config_content["tagline"] = "NOW IS FLASK"
+        # config_content["url"] = "10.0.75.1:60000"
+        # config_content["author"] = "nef2077"
+        # config_content["github"]["username"] = "reetmoon"
+        # config_content["twitter"]["username"] = "NEF2049"
+        # config_content["social"]["name"] = "nef2077"
+        # config_content["social"]["email"] = "steven199409@outlook.com"
+        # config_content["social"]["links"][0] = "https://twitter.com/NEF2077"
+        # config_content["social"]["links"][1] = "https://github.com/reetmoon"
+
+    with io.open(file_path, 'w', encoding="utf-8") as wf:
+        yaml.dump(config_content, wf)
