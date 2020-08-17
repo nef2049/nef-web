@@ -57,13 +57,12 @@ def init():
     if not os.path.exists(UPLOAD_PATH_VIDEOS):
         os.makedirs(UPLOAD_PATH_VIDEOS)
 
-    # TODO: 删除/static
-    # TODO: 遍历uploads/xxx，把每个user的posts拷贝到jekyll 然后build 然后删除(把下面的操作移动到这个遍历中进行)
+    if not os.path.exists(JEKYLL_PROJECT_PATH):
+        os.system('git clone https://github.com/cotes2020/jekyll-theme-chirpy.git')
+        os.system('rm -f jekyll-theme-chirpy/_posts/*')
 
     if not os.path.exists(JEKYLL_OUTPUT_PATH):
-        os.system('rm -rf static/')
-        os.system('git clone https://github.com/cotes2020/jekyll-theme-chirpy.git')
-
+        os.system('rm -rf static/user/*')
         os.makedirs(JEKYLL_OUTPUT_PATH)
 
         os.chdir(JEKYLL_PROJECT_PATH)
@@ -71,15 +70,32 @@ def init():
         os.system('tools/init.sh')
         os.chdir(PROJECT_PATH)
 
-    db = nef.database.tb_user.TB_User()
-    fetch_result = db.fetch_all("select * from t_user")
-    for entry in fetch_result:
-        user_id = entry["user_id"]
-        user_path = os.path.join(JEKYLL_OUTPUT_PATH, str(user_id))
-        if not os.path.exists(user_path):
-            cmd = '{0}/tools/build.sh -b {1} -d {2}'.format(
-                JEKYLL_PROJECT_PATH,
-                os.path.join("/user", str(user_id)),
-                user_path
-            )
-            os.system(cmd)
+
+def config_user(user_id):
+    os.system('rm -rf static/user/{}/*'.format(user_id))
+    # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/uploads/428899288027429/posts
+    file_path = os.path.join(UPLOAD_PATH, str(user_id) + "/posts")
+
+    if not os.path.exists(file_path):
+        raise BaseException("path '" + file_path + "' not exists")
+
+    try:
+        db_posts = nef.database.tb_posts.TB_Posts()
+        posts_result = db_posts.fetch_all("select * from t_posts where user_id=%s", user_id)
+        for entry in posts_result:
+            # cp xx/xx.md to jekyll then build then delete the post
+            os.system('cp {0} {1}'.format(entry["post_path"],
+                                          os.path.join(JEKYLL_POST_PATH, "")))
+    except BaseException as e:
+        import run
+        run.app.logger.debug(str(e))
+
+    user_path = os.path.join(JEKYLL_OUTPUT_PATH, str(user_id))
+    cmd = '{0}/tools/build.sh -b {1} -d {2}'.format(
+        JEKYLL_PROJECT_PATH,
+        os.path.join("/user", str(user_id)),
+        user_path
+    )
+    os.system(cmd)
+    # delete file in jekyll
+    os.system('rm {}'.format(os.path.join(JEKYLL_POST_PATH, "*")))

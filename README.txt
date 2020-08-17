@@ -4,4 +4,4 @@
 
 # file jekyll-theme-chirpy/_config.yml
 # Replace with the website url, e.g. 'https://username.github.io'
-url: 'http://0.0.0.0:6000'
+url: 'http://0.0.0.0:60000'

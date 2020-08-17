@@ -92,11 +92,14 @@ def login():
                 return "User does not exist"
             if fetch_result["password"] != password:
                 return "Password error"
-            flask.session["user_id"] = fetch_result["user_id"]
+            user_id = fetch_result["user_id"]
+            flask.session["user_id"] = user_id
+
+            config.config_user(user_id)
         except BaseException as e:
             app.logger.debug(e)
             return str(e)
-        return "success"
+        return flask.redirect("/user/{}".format(user_id))
     return app.send_static_file("login/login.html")
 
 
