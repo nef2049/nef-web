@@ -3,7 +3,7 @@ import datetime
 import nef.database
 import io
 import yaml
-import cmd_code
+from nef.constants import cmd_code
 import platform
 
 

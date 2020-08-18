@@ -14,6 +14,6 @@ pip3 install flask
 pip3 install pymysql
 pip3 install pyyml
 
-python3 init.py
+sudo python3 init.py
 python3 run.py
 ```
