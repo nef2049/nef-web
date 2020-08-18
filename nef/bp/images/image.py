@@ -24,13 +24,13 @@ def upload_avatar(user_id):
         print("file name " + file_path_to_save)
 
         # database
-        tb_config = nef.database.tb_blog_config.TB_Blog_Config()
+        tb_bc = nef.database.tb_blog_config.TB_Blog_Config()
         try:
             # database
-            tb_config.execute("insert into t_blog_config(user_id,avatar) values(%s,%s)", (user_id, file_path_to_save))
+            tb_bc.execute("insert into t_blog_config(user_id,avatar) values(%s,%s)", (user_id, file_path_to_save))
         except BaseException as e:
             try:
-                tb_config.execute("update t_blog_config set avatar=%s where user_id=%s", (user_id, file_path_to_save))
+                tb_bc.execute("update t_blog_config set avatar=%s where user_id=%s", (user_id, file_path_to_save))
             except BaseException as e:
                 return {"code": 400, "status": str(e)}
 

@@ -7,7 +7,7 @@
 import flask
 import nef
 from nef.session.session import SessionInterfaceImpl
-from nef.bp import bp_audios, bp_videos, bp_blogs, bp_images, bp_profile
+from nef.bp import bp_audios, bp_videos, bp_blogs, bp_images, bp_blog_config
 import datetime
 import json
 import config
@@ -56,13 +56,16 @@ app.register_blueprint(blueprint=bp_blogs, url_prefix="/user")
 app.register_blueprint(blueprint=bp_videos, url_prefix="/videos")
 app.register_blueprint(blueprint=bp_audios, url_prefix="/audios")
 app.register_blueprint(blueprint=bp_images, url_prefix="/images")
-app.register_blueprint(blueprint=bp_profile, url_prefix="/profile")
+app.register_blueprint(blueprint=bp_blog_config, url_prefix="/bc")
 
 
 @app.route("/")
 @app.route("/index.html")
 def index():
-    return "welcome"
+    if flask.session.get("user_id", None) is not None:
+        return flask.redirect("/user/{}".format(flask.session.get("user_id")))
+
+    return flask.redirect(flask.url_for("login"))
 
 
 @app.route("/favicon.ico")
@@ -203,9 +206,13 @@ def teardown_request(request):
 
 
 if __name__ == "__main__":
+    print("========== Starting... ===============")
+
     # config.init()，必须放在
     config.init()
 
     # 端口号应该在1024~65535之间，否则在linux上执行需要权限
-    # app.run(host="0.0.0.0", port=80, debug=True, ssl_context=("certificate/server.crt", "certificate/server.key"))
-    app.run(host="0.0.0.0", port=2000, debug=True)
+    # app.run(host="0.0.0.0", port=8080, debug=True, ssl_context=("certificate/server.crt", "certificate/server.key"))
+    app.run(host="0.0.0.0", port=9099, debug=True)
+
+    print("========== Stopped... ===============")

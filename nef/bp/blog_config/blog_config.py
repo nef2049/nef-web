@@ -1,11 +1,11 @@
-from nef.bp import bp_profile
+from nef.bp import bp_blog_config
 import nef.database
 import flask
 import config
 import json
 
 
-@bp_profile.route("/<user_id>/update", methods=["POST"])
+@bp_blog_config.route("/<user_id>/update", methods=["POST"])
 def update(user_id):
     title = None
     tagline = None
@@ -46,8 +46,8 @@ def update(user_id):
             social_email = flask.request.form.get("social_email", None)
             social_links = flask.request.form.get("social_links", None)
     try:
-        tb_profile = nef.database.tb_blog_config.TB_Blog_Config()
-        tb_profile.execute(
+        tb_bc = nef.database.tb_blog_config.TB_Blog_Config()
+        tb_bc.execute(
             "insert into t_blog_config(user_id,title,tagline,url,author,avatar,github_username,"
             "twitter_username,social_name,social_email,social_links) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ",
             (user_id, title, tagline, url, author, avatar, github_username, twitter_username,
@@ -56,8 +56,8 @@ def update(user_id):
         )
     except BaseException as e:
         try:
-            tb_profile.execute(
-                "update t_blog_config set user_id=%s,title,tagline=%s,url=%s,author=%s,avatar=%s,github_username=%s,"
+            tb_bc.execute(
+                "update t_blog_config set title=%s,tagline=%s,url=%s,author=%s,avatar=%s,github_username=%s,"
                 "twitter_username=%s,social_name=%s,social_email=%s,social_links=%s where user_id=%s",
                 (title, tagline, url, author, avatar, github_username, twitter_username, social_name, social_email,
                  social_links, user_id))

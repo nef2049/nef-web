@@ -99,7 +99,7 @@ def config_user(user_id):
     file_path = os.path.join(UPLOAD_PATH, str(user_id) + "/posts")
 
     if not os.path.exists(file_path):
-        raise BaseException("path '" + file_path + "' not exists")
+        os.makedirs(file_path)
 
     try:
         db_posts = nef.database.tb_posts.TB_Posts()
