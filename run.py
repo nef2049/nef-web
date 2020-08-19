@@ -213,6 +213,6 @@ if __name__ == "__main__":
 
     # 端口号应该在1024~65535之间，否则在linux上执行需要权限
     # app.run(host="0.0.0.0", port=8080, debug=True, ssl_context=("certificate/server.crt", "certificate/server.key"))
-    app.run(host="0.0.0.0", port=2000, debug=True)
+    app.run(host="0.0.0.0", port=9099, debug=True)
 
     print("========== Stopped... ===============")
