@@ -7,6 +7,9 @@ import json
 
 @bp_blog_config.route("/<user_id>/update", methods=["POST"])
 def update(user_id):
+    """
+    curl -X POST -d "title=Nef2049&&tagline=Now is everything&&author=nef&&github_username=reetmoon&&twitter_username=NEF2049&&social_name=nef&&social_email=steven199409@outlook.com&&social_links=https://twitter.com/NEF2049;https://weibo.com/5310322716/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1&&url=http://119.45.209.174:2333" -H "Content-Type: application/x-www-form-urlencoded" http://119.45.209.174:2333/bc/987002467198862/update
+    """
     title = None
     tagline = None
     url = None

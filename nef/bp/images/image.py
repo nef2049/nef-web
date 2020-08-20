@@ -30,7 +30,7 @@ def upload_avatar(user_id):
             tb_bc.execute("insert into t_blog_config(user_id,avatar) values(%s,%s)", (user_id, file_path_to_save))
         except BaseException as e:
             try:
-                tb_bc.execute("update t_blog_config set avatar=%s where user_id=%s", (user_id, file_path_to_save))
+                tb_bc.execute("update t_blog_config set avatar=%s where user_id=%s", (file_path_to_save, user_id))
             except BaseException as e:
                 return {"code": 400, "status": str(e)}
 
