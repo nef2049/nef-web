@@ -1,4 +1,0 @@
-// upload favicon
-curl -X POST -F "file=@/c/Users/Vaadhoo/Desktop/0cc396138b4990e8bd5cf76cd4177d24.ico.zip" http://10.0.75.1:2333/bc/461947432927788/upload
-
-// to be continued...
