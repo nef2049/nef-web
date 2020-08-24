@@ -3,6 +3,12 @@ import nef.database
 import flask
 import config
 import json
+import werkzeug.utils
+import os
+import config
+
+
+ALLOWED_EXTENSIONS = {"zip"}
 
 
 @bp_blog_config.route("/<user_id>/update", methods=["POST"])
@@ -48,8 +54,9 @@ def update(user_id):
             social_name = flask.request.form.get("social_name", None)
             social_email = flask.request.form.get("social_email", None)
             social_links = flask.request.form.get("social_links", None)
+
+    tb_bc = nef.database.tb_blog_config.TB_Blog_Config()
     try:
-        tb_bc = nef.database.tb_blog_config.TB_Blog_Config()
         tb_bc.execute(
             "insert into t_blog_config(user_id,title,tagline,url,author,avatar,github_username,"
             "twitter_username,social_name,social_email,social_links) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ",
@@ -68,4 +75,33 @@ def update(user_id):
             return str(e)
 
     config.config_user(user_id)
+    return "success"
+
+
+@bp_blog_config.route("/<user_id>/upload", methods=["POST"])
+def upload(user_id):
+    if not nef.does_user_exist(user_id):
+        return {"code": 400, "status": "user not exists"}
+    file = flask.request.files["file"]
+    file_name = werkzeug.utils.secure_filename(file.filename)
+
+    # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/uploads/428899288027429/favicons
+    file_path = os.path.join(config.UPLOAD_PATH, str(user_id) + "/favicons")
+    if not os.path.exists(file_path):
+        os.makedirs(file_path)
+
+    if file and nef.utils.file.file_allowed(file_name, ALLOWED_EXTENSIONS):
+        tb_bc = nef.database.tb_blog_config.TB_Blog_Config()
+        try:
+            tb_bc.execute("insert into t_blog_config(user_id,favicon_filename) values(%s,%s)", (user_id, file_name))
+        except BaseException as e:
+            print("insert error:" + str(e))
+            try:
+                tb_bc.execute("update t_blog_config set favicon_filename=%s where user_id=%s", (file_name, user_id))
+            except BaseException as e:
+                print("update error: " + str(e))
+                return str(e)
+        file.save(os.path.join(file_path, file_name))
+        config.config_user(user_id)
+
     return "success"

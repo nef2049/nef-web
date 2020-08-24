@@ -63,11 +63,11 @@ def init():
         os.makedirs(UPLOAD_PATH_VIDEOS)
 
     if not os.path.exists(JEKYLL_PROJECT_PATH):
-        clone_code = os.system('git clone https://github.com/cotes2020/jekyll-theme-chirpy.git')
+        clone_code = os.system('git clone https://github.com/sleepy-zeo/jekyll-theme-chirpy')
         if clone_code != cmd_code.OS_CMD_CODE_SUCCESS:
             os.system('rm -rf jekyll-theme-chirpy')
             raise BaseException(
-                "failed to execute 'git clone https://github.com/cotes2020/jekyll-theme-chirpy.git, code: "
+                "failed to execute 'git clone https://github.com/sleepy-zeo/jekyll-theme-chirpy, code: "
                 + str(clone_code))
         os.system('rm -f jekyll-theme-chirpy/_posts/*')
 
@@ -91,6 +91,8 @@ def init():
 
 
 def config_user(user_id):
+    print("111111111111111111111111111")
+
     # config _config.yml
     config_yaml_file(user_id)
 
@@ -108,6 +110,26 @@ def config_user(user_id):
             # cp xx/xx.md to jekyll then build then delete the post
             os.system('cp {0} {1}'.format(entry["post_path"],
                                           os.path.join(JEKYLL_POST_PATH, "")))
+    except BaseException as e:
+        import run
+        run.app.logger.debug(str(e))
+
+    try:
+        db_bc = nef.database.tb_blog_config.TB_Blog_Config()
+        posts_result = db_bc.fetch_one("select * from t_blog_config where user_id=%s", user_id)
+        filename = posts_result["favicon_filename"]
+
+        if filename is not None:
+            os.system('rm -rf {}'.format(JEKYLL_PROJECT_PATH + "/assets/img/favicons/*"))
+            os.system('cp {} {}'.format(
+                os.path.join(os.path.join(UPLOAD_PATH, str(user_id) + "/favicons"), filename),
+                JEKYLL_PROJECT_PATH + "/assets/img/favicons/"))
+            os.chdir(JEKYLL_PROJECT_PATH + "/assets/img/favicons/")
+            os.system("rm -rf *.png *.xml *.json")
+            os.system("unzip {}".format(filename))
+            os.system("rm {} {} {}".format(filename, "browserconfig.xml", "manifest.json"))
+            os.chdir(PROJECT_PATH)
+
     except BaseException as e:
         import run
         run.app.logger.debug(str(e))

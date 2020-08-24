@@ -4,6 +4,7 @@ import flask
 import werkzeug.utils
 import os
 import config
+import nef.utils.file
 
 
 ALLOWED_EXTENSIONS = {'jpg', 'png'}
@@ -18,7 +19,7 @@ def upload_avatar(user_id):
     # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/uploads/428899288027429/avatar
     file_path = os.path.join(config.UPLOAD_PATH, user_id + "/avatar")
 
-    if file and file_allowed(file_name):
+    if file and nef.utils.file.file_allowed(file_name, ALLOWED_EXTENSIONS):
         file_name_to_save = "avatar." + file_name.split('.')[1]
         file_path_to_save = os.path.join("/assets/img/avatar", file_name_to_save)
         print("file name " + file_path_to_save)
@@ -50,7 +51,3 @@ def upload_avatar(user_id):
         return {"code": 400, "status": "type not allowed"}
 
     return {"code": 200, "status": "success"}
-
-
-def file_allowed(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS

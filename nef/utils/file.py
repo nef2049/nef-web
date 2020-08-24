@@ -16,3 +16,8 @@ def get_file_name(file_name):
 # black_mirror.mp4 -> mp4
 def get_file_type(file_name):
     return file_name.split('.')[-1]
+
+
+# xxx.zip in {"zip","7z", ...}?
+def file_allowed(filename, allowed_extensions):
+    return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions

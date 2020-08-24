@@ -33,6 +33,16 @@ class TB_Blog_Config(object):
                        "unique uk_bc_user_id(user_id),"
                        "constraint fk_bc_user_id foreign key(user_id) references t_user(user_id) on update cascade)")
 
+            # alter table
+            res = db.fetch_all("desc t_blog_config")
+            column_favicon_exists = False
+            for entry in res:
+                if entry["Field"] == "favicon_filename":
+                    column_favicon_exists = True
+                    break
+            if not column_favicon_exists:
+                db.execute("alter table t_blog_config add column favicon_filename varchar(128) default null")
+
     def execute(self, sql, args=None):
         with nef.database.SQLManager("NefVision") as db:
             db.execute(sql, args)

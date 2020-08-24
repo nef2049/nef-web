@@ -9,6 +9,7 @@ import datetime
 import nef.database
 import json
 import nef
+import nef.utils.file
 
 
 ALLOWED_EXTENSIONS = {'md', 'markdown'}
@@ -24,7 +25,7 @@ def upload(user_id):
     # /home/vaad/snapdragon-high-med-2020-spf-2-0_amss_standard_oem/PythonProjects/NefVision/uploads/428899288027429/posts
     file_path = os.path.join(config.UPLOAD_PATH, user_id + "/posts")
 
-    if file and file_allowed(file_name):
+    if file and nef.utils.file.file_allowed(file_name, ALLOWED_EXTENSIONS):
         try:
             # database
             tb_posts = nef.database.tb_posts.TB_Posts()
@@ -141,13 +142,18 @@ def categories(user_id, category):
     return app.send_static_file("user/" + str(user_id) + "/categories/" + category + "/index.html")
 
 
+# one param
+#   etc: /user/user_id/page_index/
+@bp_blogs.route("/<user_id>/<param>/")
+def param_one(user_id, param):
+    if not nef.does_user_login(user_id):
+        return flask.redirect("/login")
+    return app.send_static_file("user/" + str(user_id) + "/" + param + "/index.html")
+
+
 """
 # will also intercept the source files
 # @bp_blogs.route("/<user_id>/<path:path>")
 def accept_all(user_id, path):
     return app.send_static_file("user/" + str(user_id) + path + "/index.html")
 """
-
-
-def file_allowed(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS

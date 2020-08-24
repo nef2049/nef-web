@@ -70,7 +70,7 @@ def index():
 
 @app.route("/favicon.ico")
 def favicon():
-    return app.send_static_file("resources/icon/globe.ico")
+    return app.send_static_file("sys-resources/icon/globe.ico")
 
 
 @app.route("/login", methods=["GET", "POST"])
