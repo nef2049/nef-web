@@ -91,8 +91,6 @@ def init():
 
 
 def config_user(user_id):
-    print("111111111111111111111111111")
-
     # config _config.yml
     config_yaml_file(user_id)
 
@@ -105,7 +103,7 @@ def config_user(user_id):
 
     try:
         db_posts = nef.database.tb_posts.TB_Posts()
-        posts_result = db_posts.fetch_all("select * from t_posts where user_id=%s", user_id)
+        posts_result = db_posts.fetch_all("select * from t_posts where user_id=%s group by post_name", user_id)
         for entry in posts_result:
             # cp xx/xx.md to jekyll then build then delete the post
             os.system('cp {0} {1}'.format(entry["post_path"],
