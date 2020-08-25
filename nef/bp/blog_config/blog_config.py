@@ -1,7 +1,6 @@
 from nef.bp import bp_blog_config
 import nef.database
 import flask
-import config
 import json
 import werkzeug.utils
 import os
@@ -13,9 +12,6 @@ ALLOWED_EXTENSIONS = {"zip"}
 
 @bp_blog_config.route("/<user_id>/update", methods=["POST"])
 def update(user_id):
-    """
-    curl -X POST -d "title=Nef2049&&tagline=Now is everything&&author=nef&&github_username=reetmoon&&twitter_username=NEF2049&&social_name=nef&&social_email=steven199409@outlook.com&&social_links=https://twitter.com/NEF2049;https://weibo.com/5310322716/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1&&url=http://119.45.209.174:2333" -H "Content-Type: application/x-www-form-urlencoded" http://119.45.209.174:2333/bc/987002467198862/update
-    """
     title = None
     tagline = None
     url = None
@@ -26,6 +22,7 @@ def update(user_id):
     social_name = None
     social_email = None
     social_links = None
+    favicon_filename = None
 
     content_type = ""
     for header in flask.request.headers:
@@ -42,6 +39,7 @@ def update(user_id):
         social_name = json.loads(flask.request.data.decode("utf-8"))["social_name"]
         social_email = json.loads(flask.request.data.decode("utf-8"))["social_email"]
         social_links = json.loads(flask.request.data.decode("utf-8"))["social_links"]
+        favicon_filename = json.loads(flask.request.data.decode("utf-8"))["favicon_filename"]
     else:
         if config.CONTENT_TYPE_APPLICATION_URLENCODED in content_type.lower():
             title = flask.request.form.get("title", None)
@@ -54,23 +52,48 @@ def update(user_id):
             social_name = flask.request.form.get("social_name", None)
             social_email = flask.request.form.get("social_email", None)
             social_links = flask.request.form.get("social_links", None)
+            favicon_filename = flask.request.form.get("favicon_filename", None)
 
     tb_bc = nef.database.tb_blog_config.TB_Blog_Config()
+    res = tb_bc.fetch_one("select * from t_blog_config where user_id=%s", user_id)
+    if title is None:
+        title = res["title"]
+    if tagline is None:
+        tagline = res["tagline"]
+    if url is None:
+        url = res["url"]
+    if author is None:
+        author = res["author"]
+    if avatar is None:
+        avatar = res["avatar"]
+    if github_username is None:
+        github_username = res["github_username"]
+    if twitter_username is None:
+        twitter_username = res["twitter_username"]
+    if social_name is None:
+        social_name = res["social_name"]
+    if social_email is None:
+        social_email = res["social_email"]
+    if social_links is None:
+        social_links = res["social_links"]
+    if favicon_filename is None:
+        favicon_filename = res["favicon_filename"]
+
     try:
         tb_bc.execute(
             "insert into t_blog_config(user_id,title,tagline,url,author,avatar,github_username,"
-            "twitter_username,social_name,social_email,social_links) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ",
+            "twitter_username,social_name,social_email,social_links,favicon_filename) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) ",
             (user_id, title, tagline, url, author, avatar, github_username, twitter_username,
              social_name,
-             social_email, social_links)
+             social_email, social_links, favicon_filename)
         )
     except BaseException as e:
         try:
             tb_bc.execute(
                 "update t_blog_config set title=%s,tagline=%s,url=%s,author=%s,avatar=%s,github_username=%s,"
-                "twitter_username=%s,social_name=%s,social_email=%s,social_links=%s where user_id=%s",
+                "twitter_username=%s,social_name=%s,social_email=%s,social_links=%s,favicon_filename=%s where user_id=%s",
                 (title, tagline, url, author, avatar, github_username, twitter_username, social_name, social_email,
-                 social_links, user_id))
+                 social_links, favicon_filename, user_id))
         except BaseException as e:
             return str(e)
 
