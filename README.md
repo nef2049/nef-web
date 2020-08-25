@@ -16,12 +16,6 @@ sudo python3 init.py
 python3 run.py
 ```
 
-> example
-
-```
-http://119.45.209.174:2333
-```
-
 > url
 
 ```
