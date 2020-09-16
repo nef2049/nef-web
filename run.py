@@ -7,7 +7,7 @@
 import flask
 import nef
 from nef.session.session import SessionInterfaceImpl
-from nef.bp import bp_audios, bp_videos, bp_blogs, bp_images, bp_blog_config
+from nef.bp import bp_audios, bp_videos, bp_blogs, bp_images, bp_blog_config, bp_file_system
 import datetime
 import json
 import config
@@ -57,6 +57,7 @@ app.register_blueprint(blueprint=bp_videos, url_prefix="/videos")
 app.register_blueprint(blueprint=bp_audios, url_prefix="/audios")
 app.register_blueprint(blueprint=bp_images, url_prefix="/images")
 app.register_blueprint(blueprint=bp_blog_config, url_prefix="/bc")
+app.register_blueprint(blueprint=bp_file_system, url_prefix="/files")
 
 
 @app.route("/")
