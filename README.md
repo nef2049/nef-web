@@ -11,6 +11,7 @@ https://github.com/cotes2020/jekyll-theme-chirpy/
 pip3 install flask
 pip3 install pymysql
 pip3 install pyyml
+pip3 install requests
 
 sudo python3 init.py
 python3 run.py
