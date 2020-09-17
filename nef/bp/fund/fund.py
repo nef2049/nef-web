@@ -55,6 +55,11 @@ def delete_fund_code(fund_code):
     return str(fund_code_list)
 
 
+@bp_fund.route("/list")
+def list():
+    return str(fund_code_list)
+
+
 def fund(fund_code, data_dict=None):
     url = 'http://fundgz.1234567.com.cn/js/{}.js?rt=1589463125600'.format(fund_code)
     result = requests.get(url)
@@ -64,15 +69,15 @@ def fund(fund_code, data_dict=None):
         j_data = json.loads(content)
         j_data_convert = dict()
         j_data_convert["code"] = j_data["fundcode"]
-        j_data_convert["name"] = j_data["name"]
+        # j_data_convert["name"] = j_data["name"]
         j_data_convert["unit_worth"] = j_data["dwjz"]
         j_data_convert["unit_worth_time"] = j_data["jzrq"]
         j_data_convert["estimate_worth"] = j_data["gsz"]
-        j_data_convert["estimate_rate"] = j_data["gszzl"]
+        j_data_convert["estimate_rate"] = float(j_data["gszzl"])
         j_data_convert["update_time"] = j_data["gztime"]
 
         if data_dict is not None:
-            data_dict[j_data_convert["name"]] = float(j_data_convert["estimate_rate"])
+            data_dict[j_data["name"]] = j_data_convert
 
         return j_data_convert
     except:
